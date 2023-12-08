@@ -61,7 +61,7 @@ pip install -r requirements.txt
 ****************************************************************************************************************************************************************************************************************************************************
 
 # Usage
-### 1. You can use downloadProxyFromApigee.py two types
+### 1. You can use downloadProxyFromApigee.py in two ways
 
 #### A. Just run bellow command
 ```python
