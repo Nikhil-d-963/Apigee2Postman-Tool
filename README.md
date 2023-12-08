@@ -61,8 +61,17 @@ pip install -r requirements.txt
 ****************************************************************************************************************************************************************************************************************************************************
 
 # Usage
+### 1. You can use downloadProxyFromApigee.py two types
 
-### 1. Download Proxy
+#### A. Just run bellow command
+```python
+python3 downloadProxyFromApigee.py download
+```
+#### It will automatically prompt for all the details and carry out the process.
+
+ ## OR
+
+#### B. Download Proxy
 
 ##### To download an API proxy from Apigee, use the following command syntax:
 
