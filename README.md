@@ -30,7 +30,7 @@ gcloud auth print-access-token
 git clone https://github.com/Nikhil-d-963/Apigee2Postman-Tool.git
 ```
 ```shell
-cd apigee2postman-tool
+cd Apigee2Postman-Tool
 ```
 
 
