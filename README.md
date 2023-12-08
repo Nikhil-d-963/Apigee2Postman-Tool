@@ -27,7 +27,7 @@ gcloud auth print-access-token
 
 ### 2.Clone and Navigate to the Project:
    ```shell
-git clone https://github.com/nikhild28/apigee2postman-tool.git
+git clone [https://github.com/nikhild28/apigee2postman-tool.git](https://github.com/Nikhil-d-963/Apigee2Postman-Tool.git)
 ```
 ```shell
 cd apigee2postman-tool
