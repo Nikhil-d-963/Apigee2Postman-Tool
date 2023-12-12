@@ -18,6 +18,8 @@ Follow these steps to set up Apigee to Postman CLI:
 ### 1. **Google Cloud Authentication:**
    - Make sure you have the [Google Cloud SDK](https://cloud.google.com/sdk/docs/install) installed on your machine.
    - follow the steps in the documentation
+   - After run this --> "./google-cloud-sdk/bin/gcloud init" command, select your configuration or create your configuration.
+   - Please sign in with your Apigee access account, which should have the proxies you need
    - Run the following command to make sure you have GAuth token:
 ```shell
 gcloud auth print-access-token
