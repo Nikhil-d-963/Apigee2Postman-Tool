@@ -1,64 +1,75 @@
 import json
 import os
-from datetime import datetime
-from tqdm import tqdm  # Import tqdm for the progress bar
-import shutil
+from tqdm import tqdm
 
-def extract_endpoints(json_data, base_path):
-    endpoints = []
+def clean_condition(condition):
+    return condition.strip().replace('"', '').replace('(', '').replace(')', '')
 
-    if "Flows" in json_data["ProxyEndpoint"]:
-        flows = json_data["ProxyEndpoint"]["Flows"]["Flow"]
-        for flow in flows:
-            if "Condition" in flow and "Request" in flow:
-                condition = flow["Condition"]
-                request = flow["Request"]
-                if condition and request:
-                    if isinstance(request["Step"], list):
-                        method = request["Step"][0].get("Name", "")
-                    else:
-                        method = request.get("Step", {}).get("Name", "")
-                    
-                    path_suffix = condition.split("MatchesPath")[1].split("and")[0].strip()[1:-1].strip('"')
-                    endpoint = f"{base_path}{path_suffix}"
+def parse_paths_and_verb(conditions):
+    pathsuffix = None
+    verb = "Unknown"
 
-                    verb = "GET" if "request.verb = \"GET\"" in condition else "POST"
+    for condition in conditions:
+        condition = clean_condition(condition)
+        if 'MatchesPath' in condition:
+            pathsuffix = condition.split('MatchesPath')[1].strip().strip('/').strip()
 
-                    # Extract API name from JSON
-                    api_name = flow.get("@name", "")
-                    
-                    endpoints.append({"Endpoint": endpoint, "Verb": verb, "APIName": api_name})
+        if 'request.verb' in condition:
+            verb = condition.split('=')[1].strip()
 
-    return endpoints
+    return pathsuffix, verb
 
-def extract_endpoints_from_json_file(file_path):
-    with open(file_path, "r") as file:
-        json_data = json.load(file)
-    
-    base_path = json_data["ProxyEndpoint"]["HTTPProxyConnection"]["BasePath"]
-    return extract_endpoints(json_data, base_path)
+def extract_api_details(flow, http_proxy_connection):
+    if 'Condition' in flow and flow['Condition']:
+        name = flow.get('@name', '')
+        description = flow.get('Description', '')
+        request_details = flow.get('Request', {})
+        response_details = flow.get('Response', {})
+        conditions = clean_condition(flow['Condition']).split('and')
 
-def create_postman_collection(endpoints, target_server):
+        pathsuffix, verb = parse_paths_and_verb(conditions)
+
+        basepath = http_proxy_connection.get('BasePath', None)
+
+        return {
+            "name": name,
+            "description": description,
+            "verb": verb,
+            "pathsuffix": "/" + pathsuffix,
+            "basepath": basepath
+        }
+
+    return None
+
+def process_flows(flows, http_proxy_connection):
+    return [extract_api_details(flow, http_proxy_connection) for flow in flows if extract_api_details(flow, http_proxy_connection)]
+
+def create_status_cure_json(input_json):
+    flows = input_json.get("ProxyEndpoint", {}).get("Flows", {}).get("Flow", [])
+    http_proxy_connection = input_json.get("ProxyEndpoint", {}).get("HTTPProxyConnection", {})
+
+    return {"apis_details": process_flows(flows, http_proxy_connection)}
+
+def create_postman_collection(endpoints, target_server, collection_name="Collection Name"):
     postman_collection = {
         "info": {
-            "name": "Collection Name",
+            "name": collection_name,
             "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
         },
         "item": []
     }
 
-
     for endpoint in tqdm(endpoints, desc="Creating Postman Collection"):
         request = {
-            "name": f"{endpoint['APIName']}",
+            "name": f"{endpoint['name']}",
             "request": {
-                "method": endpoint["Verb"],
+                "method": endpoint["verb"],
                 "header": [],
                 "url": {
-                    "raw": f"{target_server}{endpoint['Endpoint']}",
+                    "raw": f"{target_server}{endpoint['basepath']}{endpoint['pathsuffix']}",
                     "protocol": "https",
                     "host": [target_server],
-                    "path": endpoint['Endpoint'].split("/")[1:],
+                    "path": [endpoint['basepath']] + endpoint['pathsuffix'].split("/")[1:],
                 }
             },
             "response": [],
@@ -68,24 +79,45 @@ def create_postman_collection(endpoints, target_server):
 
     return postman_collection
 
-target_server = input("Enter the target server (e.g., google.com): ")
+# Load input JSON
+folder_path = './xml2jsonConvertedFile'
+input_json_file_path = os.path.join(folder_path, 'default.json')
 
-json_file_path = "./xml2jsonConvertedFile/default.json"
-endpoints = extract_endpoints_from_json_file(json_file_path)
+with open(input_json_file_path, 'r') as file:
+    input_json = json.load(file)
 
-# Create Postman collection
-postman_collection = create_postman_collection(endpoints, target_server)
+# Validate input JSON format
+flows = input_json.get("ProxyEndpoint", {}).get("Flows", {}).get("Flow", [])
+http_proxy_connection = input_json.get("ProxyEndpoint", {}).get("HTTPProxyConnection", {})
 
-timestamp = datetime.now().strftime('%Y%m%d%H%M%S')
-postman_collection_filename = f"PostmanCollection_{timestamp}.json"
+if not flows or not http_proxy_connection:
+    print("Invalid input JSON format. Exiting.")
+    exit()
+
+# Process and generate output
+status_cure_json = create_status_cure_json(input_json)
+endpoints = status_cure_json.get("apis_details", [])
+
+# Update the target server as needed
+target_server = "{{domaine}}"
+
+# Create the Postman Collection
+collection_name = input("Enter your collection name:")
+postman_collection = create_postman_collection(endpoints, target_server, collection_name)
 
 # Destination folder
-destination_folder = "PostmanCollections"
+destination_folder = 'PostmanCollections'
+postman_collection_filename = collection_name + '.json'
+
+# Create the destination folder if it doesn't exist
 os.makedirs(destination_folder, exist_ok=True)
 
-# Save the Postman collection
-postman_collection_filepath = os.path.join(destination_folder, postman_collection_filename)
-with open(postman_collection_filepath, "w") as file:
-    json.dump(postman_collection, file, indent=2)
+# Save the Postman Collection
+postman_collection_file_path = os.path.join(destination_folder, postman_collection_filename)
+with open(postman_collection_file_path, 'w') as postman_collection_file:
+    json.dump(postman_collection, postman_collection_file, indent=2)
 
 print(f"Postman collection created and saved as '{postman_collection_filename}' in the {destination_folder} folder.")
+
+
+print(status_cure_json)
