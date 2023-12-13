@@ -120,4 +120,3 @@ with open(postman_collection_file_path, 'w') as postman_collection_file:
 print(f"Postman collection created and saved as '{postman_collection_filename}' in the {destination_folder} folder.")
 
 
-print(status_cure_json)
