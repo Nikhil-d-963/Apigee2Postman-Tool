@@ -99,7 +99,7 @@ status_cure_json = create_status_cure_json(input_json)
 endpoints = status_cure_json.get("apis_details", [])
 
 # Update the target server as needed
-target_server = "{{domaine}}"
+target_server = "{{domaine-name}}"
 
 # Create the Postman Collection
 collection_name = input("Enter your collection name:")
