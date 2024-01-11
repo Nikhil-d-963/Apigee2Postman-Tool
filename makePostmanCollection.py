@@ -42,7 +42,13 @@ def extract_api_details(flow, http_proxy_connection):
     return None
 
 def process_flows(flows, http_proxy_connection):
-    return [extract_api_details(flow, http_proxy_connection) for flow in flows if extract_api_details(flow, http_proxy_connection)]
+    if isinstance(flows, list):
+        return [extract_api_details(flow, http_proxy_connection) for flow in flows if extract_api_details(flow, http_proxy_connection)]
+    elif isinstance(flows, dict):
+        return [extract_api_details(flows, http_proxy_connection)]
+    else:
+        return []
+
 
 def create_status_cure_json(input_json):
     flows = input_json.get("ProxyEndpoint", {}).get("Flows", {}).get("Flow", [])

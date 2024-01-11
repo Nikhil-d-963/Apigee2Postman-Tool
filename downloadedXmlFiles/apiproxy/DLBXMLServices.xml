@@ -1,0 +1,27 @@
+<APIProxy revision="19" name="DLBXMLServices">
+    <DisplayName></DisplayName>
+    <Description></Description>
+    <CreatedAt>1700542277158</CreatedAt>
+    <LastModifiedAt>1700542277158</LastModifiedAt>
+    <BasePaths>/api/dlb/service</BasePaths>
+    <Policies>
+        <Policy>FC-SF-CustomProxyFaultHandler</Policy>
+        <Policy>FC-SF-DefaultFaultHandler</Policy>
+        <Policy>FC-SF-PreFlow</Policy>
+        <Policy>AM-PathSuffix</Policy>
+        <Policy>FC-SF-SetVariable</Policy>
+        <Policy>FC-Cors</Policy>
+        <Policy>addCors</Policy>
+        <Policy>FC-SF-JsonToXml</Policy>
+        <Policy>FC-SF-XmlToJson</Policy>
+        <Policy>RF-NotFound</Policy>
+        <Policy>JTP-Default</Policy>
+        <Policy>FC-SF-MessageLogging</Policy>
+    </Policies>
+    <ProxyEndpoints>
+        <ProxyEndpoint>default</ProxyEndpoint>
+    </ProxyEndpoints>
+    <TargetEndpoints>
+        <TargetEndpoint>default</TargetEndpoint>
+    </TargetEndpoints>
+</APIProxy>

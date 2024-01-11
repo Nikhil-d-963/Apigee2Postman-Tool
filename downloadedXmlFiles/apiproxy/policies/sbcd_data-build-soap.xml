@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<AssignMessage async="false" continueOnError="true" enabled="true" name="sbcd_data-build-soap">
+    <DisplayName>sbcd_data Build SOAP</DisplayName>
+    <AssignVariable>
+        <Name>username</Name>
+        <Value>{username}</Value>
+    </AssignVariable>
+    <AssignVariable>
+        <Name>password</Name>
+        <Value>{password}</Value>
+    </AssignVariable>
+    <AssignVariable>
+        <Name>mobile</Name>
+        <Value>{mobile}</Value>
+    </AssignVariable>
+    <AssignVariable>
+        <Name>message</Name>
+        <Value>{message}</Value>
+    </AssignVariable>
+    <AssignVariable>
+        <Name>sendername</Name>
+        <Value>{sendername}</Value>
+    </AssignVariable>
+    <AssignMessage continueOnError="false" enabled="true" name="AM-Set-Request-1">
+        <Set>
+            <QueryParams>
+                <QueryParam name="username">{username}</QueryParam>
+                <QueryParam name="password">{password}</QueryParam>
+                <QueryParam name="mobile">{mobile}</QueryParam>
+                <QueryParam name="message">{message}</QueryParam>
+                <QueryParam name="sendername">{sendername}</QueryParam>
+            </QueryParams>
+        </Set>
+        <AssignTo createNew="false" transport="http" type="request"/>
+    </AssignMessage>
+    <IgnoreUnresolvedVariables>true</IgnoreUnresolvedVariables>
+</AssignMessage>

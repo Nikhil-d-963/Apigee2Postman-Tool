@@ -1,0 +1,27 @@
+{
+  "info": {
+    "name": "sms",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "SMS-Api",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "{{domaine-name}}/sms-api/sms",
+          "protocol": "https",
+          "host": [
+            "{{domaine-name}}"
+          ],
+          "path": [
+            "/sms-api",
+            "sms"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

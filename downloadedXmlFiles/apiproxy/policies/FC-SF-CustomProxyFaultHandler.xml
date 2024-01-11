@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<FlowCallout continueOnError="false" enabled="true" name="FC-SF-CustomProxyFaultHandler">
+    <DisplayName>FC-SF-CustomProxyFaultHandler</DisplayName>
+    <FaultRules/>
+    <Properties/>
+    <SharedFlowBundle>SF-CustomProxyFaultHandler</SharedFlowBundle>
+</FlowCallout>
